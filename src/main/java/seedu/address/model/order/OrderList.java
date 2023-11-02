@@ -3,9 +3,7 @@ package seedu.address.model.order;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,22 +39,37 @@ public class OrderList implements Iterable<Order> {
     /**
      * Adds an order to the list.
      */
-    public void add(Order toAdd) {
+    public Person add(Order toAdd) {
         requireNonNull(toAdd);
         if (contains(toAdd)) {
             throw new DuplicateOrderException();
         }
         internalList.add(toAdd);
+
+        Person originalPerson = toAdd.getPerson();
+        Set<Order> updatedOrders = new HashSet<>(originalPerson.getOrders());
+        updatedOrders.add(toAdd);
+        return new Person(originalPerson.getName(), originalPerson.getPhone(), originalPerson.getEmail(),
+                originalPerson.getAddress(), originalPerson.getTags(), originalPerson.getAllergies(), updatedOrders);
     }
     /**
      * Removes the equivalent order from the list.
      * The order must exist in the list.
+     *
+     * @return the person whose order is for
      */
-    public void remove(Order toRemove) {
+    public Person remove(Order toRemove) {
         requireNonNull(toRemove);
         if (!internalList.remove(toRemove)) {
             throw new OrderNotFoundException();
         }
+
+        Person originalPerson = toRemove.getPerson();
+        Set<Order> updatedOrders = originalPerson.getOrders().stream()
+                .filter(o -> !o.equals(toRemove)).collect(Collectors.toSet());
+
+        return new Person(originalPerson.getName(), originalPerson.getPhone(), originalPerson.getEmail(),
+                originalPerson.getAddress(), originalPerson.getTags(), originalPerson.getAllergies(), updatedOrders);
     }
 
 
@@ -79,6 +92,15 @@ public class OrderList implements Iterable<Order> {
         requireNonNull(person);
         List<Order> temp = internalList.stream().map(x -> x.getPerson().equals(person)
                 ? new Order(x.getOrderNumber(), newPerson, x.getMedicines(), x.getStatus()) : x)
+                .collect(Collectors.toList());
+        this.setOrders(temp);
+    }
+
+    public void updateOrdersPerson(Person person) {
+        requireNonNull(person);
+
+        List<Order> temp = internalList.stream().map(x -> x.getPerson().isSamePerson(person)
+                        ? new Order(x.getOrderNumber(), person, x.getMedicines(), x.getStatus()) : x)
                 .collect(Collectors.toList());
         this.setOrders(temp);
     }
@@ -112,7 +134,7 @@ public class OrderList implements Iterable<Order> {
      * The person identity of {@code editedPerson} must not be the same as another existing person in the list.
      */
 
-    public void setOrder(Order target, Order editedOrder) {
+    public Person setOrder(Order target, Order editedOrder) {
         requireAllNonNull(target, editedOrder);
 
         int index = internalList.indexOf(target);
@@ -125,6 +147,14 @@ public class OrderList implements Iterable<Order> {
         }
 
         internalList.set(index, editedOrder);
+
+        Person originalPerson = target.getPerson();
+        Set<Order> updatedOrders = originalPerson.getOrders().stream().filter(o -> !o.equals(target)).
+                collect(Collectors.toSet());
+        updatedOrders.add(editedOrder);
+
+        return new Person(originalPerson.getName(), originalPerson.getPhone(), originalPerson.getEmail(),
+                originalPerson.getAddress(), originalPerson.getTags(), originalPerson.getAllergies(), updatedOrders);
     }
 
     /**

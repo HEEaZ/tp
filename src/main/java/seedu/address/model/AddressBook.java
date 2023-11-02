@@ -139,7 +139,11 @@ public class AddressBook implements ReadOnlyAddressBook {
      * Adds an order to the address book.
      */
     public void addOrder(Order o) {
-        orders.add(o);
+        requireNonNull(o);
+        Person updatedPerson = orders.add(o);
+
+        persons.updatePerson(updatedPerson);
+        orders.updateOrdersPerson(updatedPerson);
     }
 
     /**
@@ -147,7 +151,11 @@ public class AddressBook implements ReadOnlyAddressBook {
      * {@code key} must exist in the address book.
      */
     public void removeOrder(Order key) {
-        orders.remove(key);
+        requireNonNull(key);
+        Person updatedPerson = orders.remove(key);
+
+        persons.updatePerson(updatedPerson);
+        orders.updateOrdersPerson(updatedPerson);
     }
 
 
@@ -166,8 +174,10 @@ public class AddressBook implements ReadOnlyAddressBook {
      */
     public void setOrder(Order target, Order editedOrder) {
         requireNonNull(editedOrder);
+        Person updatedPerson = orders.setOrder(target, editedOrder);
 
-        orders.setOrder(target, editedOrder);
+        persons.updatePerson(updatedPerson);
+        orders.updateOrdersPerson(updatedPerson);
     }
 
     //// medicine-level operations
