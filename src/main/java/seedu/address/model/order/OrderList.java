@@ -3,7 +3,11 @@ package seedu.address.model.order;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,7 +21,7 @@ import seedu.address.model.person.Person;
 /**
  * A list of orders that enforces uniqueness between its elements and does not allow nulls.
  * An order is considered unique by comparing using {@code Order#isSameOrder(Order)}. As such, adding of
- * orders uses Order#isSameOrder(Order) for equality so as to ensure that the order being added or updated is
+ * orders uses Order#isSameOrder(Order) for equality to ensure that the order being added or updated is
  * unique in terms of identity in the OrderList.
  *
  * Supports a minimal set of list operations.
@@ -96,6 +100,10 @@ public class OrderList implements Iterable<Order> {
         this.setOrders(temp);
     }
 
+    /**
+     * Replaces the outdated person in all orders with the updated {@code person}
+     * @param person
+     */
     public void updateOrdersPerson(Person person) {
         requireNonNull(person);
 
@@ -149,8 +157,8 @@ public class OrderList implements Iterable<Order> {
         internalList.set(index, editedOrder);
 
         Person originalPerson = target.getPerson();
-        Set<Order> updatedOrders = originalPerson.getOrders().stream().filter(o -> !o.equals(target)).
-                collect(Collectors.toSet());
+        Set<Order> updatedOrders = originalPerson.getOrders().stream().filter(o -> !o.equals(target))
+                .collect(Collectors.toSet());
         updatedOrders.add(editedOrder);
 
         return new Person(originalPerson.getName(), originalPerson.getPhone(), originalPerson.getEmail(),

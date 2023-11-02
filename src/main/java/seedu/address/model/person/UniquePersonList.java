@@ -8,7 +8,6 @@ import java.util.List;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import seedu.address.model.order.Order;
 import seedu.address.model.person.exceptions.DuplicatePersonException;
 import seedu.address.model.person.exceptions.PersonNotFoundException;
 
@@ -69,22 +68,16 @@ public class UniquePersonList implements Iterable<Person> {
         internalList.set(index, editedPerson);
     }
 
-    public void addOrder(Order order) {
-        requireNonNull(order);
-        Person outdatedPerson = internalList.stream().filter(p -> p.isSamePerson(order.getPerson())).
-                findFirst().orElseThrow(PersonNotFoundException::new);
-        int index = internalList.indexOf(outdatedPerson);
-        if (index == -1) {
-            throw new PersonNotFoundException();
-        }
-
-        internalList.set(index, order.getPerson());
-    }
-
+    /**
+     * Replaces the outdated person that is the same person as {@code person} with the new person.
+     * Outdated person is found using {@code isSamePerson}.
+     * {@code persons} must exist in the list.
+     * @param person
+     */
     public void updatePerson(Person person) {
         requireNonNull(person);
-        Person outdatedPerson = internalList.stream().filter(p -> p.isSamePerson(person)).
-                findFirst().orElseThrow(PersonNotFoundException::new);
+        Person outdatedPerson = internalList.stream().filter(p -> p.isSamePerson(person))
+                .findFirst().orElseThrow(PersonNotFoundException::new);
         int index = internalList.indexOf(outdatedPerson);
         if (index == -1) {
             throw new PersonNotFoundException();
