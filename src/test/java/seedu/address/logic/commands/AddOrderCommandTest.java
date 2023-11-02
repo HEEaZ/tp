@@ -101,14 +101,7 @@ class AddOrderCommandTest {
         // ensures that outOfBoundIndex is still in bounds of address book list
         assertTrue(outOfBoundIndex.getZeroBased() < model.getAddressBook().getPersonList().size());
 
-        Person person = new PersonBuilder().build();
-
         AddOrderCommand addOrderCommand = new AddOrderCommand(outOfBoundIndex, orderNumber, medicines, false);
-
-        Order order = new Order(orderNumber, person, medicines, orderStatus);
-        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
-        expectedModel.addOrder(order);
-
         assertCommandFailure(addOrderCommand, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
     }
 
